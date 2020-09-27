@@ -1,16 +1,30 @@
-// This package provides functionality for hedged requests,
-// which are used to reduce latency in distributed systems.
-//
-// "One such approach isto defer sending a secondary
-// request untilthe first request has been outstanding
-// for more than the 95th-percentile expected latency
-// for this class of requests. This approach limits the
-// additional load to approximately 5% while
-// substantially shortening the latency tail." - 2013 Google Paper
+/*
+Package hedgedrequests provides functionality for hedged requests,
+which are used to reduce latency in distributed systems.
+They are similar to parallel requests, except
+subsequent requests do not run until the prior
+requests take longer than the given tail latency
+
+"One such approach is to defer sending a secondary
+request until the first request has been outstanding
+for more than the 95th-percentile expected latency
+for this class of requests. This approach limits the
+additional load to approximately 5% while
+substantially shortening the latency tail." - 2013 Google Paper
+*/
 package hedgedrequests
 
 import "time"
 
+/*
+Makes a hedged request using the given req func.
+
+req is the request function which returns a byte slice
+
+tailLatency is the 95th percentile latency in milliseconds
+
+maxQueries is the maximum amount of queries to run
+*/
 func HedgedRequest(req func() []byte, tailLatency int, maxQueries int) []byte {
 	ch := make(chan []byte, maxQueries)
 	var queriesDone = 1            // Count how many queries have been sent

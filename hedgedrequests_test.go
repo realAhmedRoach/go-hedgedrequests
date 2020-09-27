@@ -30,11 +30,11 @@ func TestHedgedRequest_WithLatency(t *testing.T) {
 		reqsCalled++
 		if reqsCalled == 1 {
 			select {
-			case <-time.After(time.Duration(tailLatency+1) * time.Millisecond):
+			case <-time.After(time.Duration(tailLatency+1) * time.Millisecond): // Trigger subsequent request
 				return []byte("test")
 			}
-		} else if reqsCalled == 2 {
-			return []byte("test")
+		} else if reqsCalled == 2 { // Second request
+			return []byte("test") // Return immediately
 		}
 		return []byte("fail, return called outside of if")
 	}
